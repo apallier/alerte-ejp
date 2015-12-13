@@ -11,3 +11,15 @@ Nécessite la librairie `requests`:
 ```
 pip install requests
 ```
+
+## Principe
+
+Le programme tourne en continue et va scruter les deux adresses suivantes à interval régulier :
+
+* Pour l'EJP : https://particulier.edf.fr/bin/edf_rc/servlets/ejptemponew?Date_a_remonter=date&TypeAlerte=EJP
+  
+  Lorsque le tarif EJP de la journée du lendemain est connu, une alerte est envoyée par mail ou par sms via l'API Freemobile.
+
+* Pour le TEMPO : https://particulier.edf.fr/bin/edf_rc/servlets/ejptemponew?Date_a_remonter=date&TypeAlerte=TEMPO
+  
+  Lorsque la couleur du tarif Tempo de la journée du lendemain est connue, une indication de la probabilité d'être en EJP est envoyée (Bleu=faible, Blanc=moyenne et rouge=élevé)
