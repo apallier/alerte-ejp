@@ -18,7 +18,10 @@ import time
 
 import requests
 
-import config
+try:
+    import my_config as config
+except ImportError:
+    import config
 
 logging.basicConfig(filename='alerte_ejp.log',
                     level=logging.INFO,
@@ -127,12 +130,11 @@ if __name__ == '__main__':
 
     ejp_previous_status = 'ND'
     tempo_previous_color = 'ND'
-
     while True:
 
         if not 4 <= datetime.date.today().weekday() <= 5:
+            logging.info('-' * 50)
             ejp_previous_status = alert_ejp(ejp_previous_status)
             tempo_previous_color = prevision_ejp(tempo_previous_color)
 
-        logging.info('-' * 50)
         time.sleep(60)
