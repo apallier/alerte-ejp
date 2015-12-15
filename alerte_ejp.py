@@ -33,22 +33,23 @@ TEMPO_API = r"https://particulier.edf.fr/bin/edf_rc/servlets/ejptemponew?Date_a_
 def send_mail(message):
     """ Envoie un mail """
     #pylint: disable=redefined-outer-name
-    msg = MIMEText(message.encode('latin_1'), 'plain', 'latin_1')
-    msg['From'] = email.utils.formataddr(('Alerte EJP', config.FROM_ADDR))
-    msg['To'] = email.utils.formataddr(('Alerte EJP',
-                                        ', '.join(config.TO_ADDRS)))
-    msg['Subject'] = Header("Alerte EJP", 'utf-8')
+    if config.TO_ADDRS:
+        msg = MIMEText(message.encode('latin_1'), 'plain', 'latin_1')
+        msg['From'] = email.utils.formataddr(('Alerte EJP', config.FROM_ADDR))
+        msg['To'] = email.utils.formataddr(('Alerte EJP',
+                                            ', '.join(config.TO_ADDRS)))
+        msg['Subject'] = Header("Alerte EJP", 'utf-8')
 
-    server = smtplib.SMTP(host='smtp.gmail.com')
-    server.starttls()
-    server.ehlo()
-    server.login(config.FROM_ADDR, config.PASSWORD)
-    # server.set_debuglevel(True) # show communication with the server
-    try:
-        server.sendmail(config.FROM_ADDR, config.TO_ADDRS, msg.as_string())
-        logging.info('Email envoyé')
-    finally:
-        server.quit()
+        server = smtplib.SMTP(host='smtp.gmail.com')
+        server.starttls()
+        server.ehlo()
+        server.login(config.FROM_ADDR, config.PASSWORD)
+        # server.set_debuglevel(True) # show communication with the server
+        try:
+            server.sendmail(config.FROM_ADDR, config.TO_ADDRS, msg.as_string())
+            logging.info('Email envoyé')
+        finally:
+            server.quit()
 
 
 def send_sms_freemobile(message):
