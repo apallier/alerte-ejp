@@ -142,4 +142,4 @@ if __name__ == '__main__':
             if tempo_color:
                 tempo_previous_color = tempo_color
 
-        time.sleep(60)
+        time.sleep(5 * 60)
