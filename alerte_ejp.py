@@ -135,7 +135,11 @@ if __name__ == '__main__':
 
         if not 4 <= datetime.date.today().weekday() <= 5:
             logging.info('-' * 50)
-            ejp_previous_status = alert_ejp(ejp_previous_status)
-            tempo_previous_color = prevision_ejp(tempo_previous_color)
+            ejp_status = alert_ejp(ejp_previous_status)
+            if ejp_status:
+                ejp_previous_status = ejp_status
+            tempo_color = prevision_ejp(tempo_previous_color)
+            if tempo_color:
+                tempo_previous_color = tempo_color
 
         time.sleep(60)
