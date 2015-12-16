@@ -13,10 +13,12 @@ from email.mime.text import MIMEText
 import datetime
 import email.utils
 import logging
+import pickle
 import smtplib
 import time
 
 import requests
+
 
 try:
     import my_config as config
@@ -126,11 +128,24 @@ def prevision_ejp(previous_color):
     except BaseException as err:
         logging.error(err)
 
+def save_status(ejp, tempo):
+    """ Sauvegarde du contexte pour éviter de renvoyer les alertes en cas
+        de redémarrage du programme
+    """
+    pickle.dump((ejp, tempo), open("ctx.bin", "wb"))
+
+def load_status():
+    """ Charge le contexte """
+    ejp, tempo = 'ND'
+    try:
+        (ejp, tempo) = pickle.load(open("ctx.bin", "rb"))
+    except BaseException as err:
+        logging.error("Imposssible de récupérer le contexte précédent: %s", err)
+    return (ejp, tempo)
 
 if __name__ == '__main__':
 
-    ejp_previous_status = 'ND'
-    tempo_previous_color = 'ND'
+    (ejp_previous_status, tempo_previous_color) = load_status()
     while True:
 
         if not 4 <= datetime.date.today().weekday() <= 5:
@@ -141,5 +156,7 @@ if __name__ == '__main__':
             tempo_color = prevision_ejp(tempo_previous_color)
             if tempo_color:
                 tempo_previous_color = tempo_color
+
+            save_status(ejp_previous_status, tempo_previous_color)
 
         time.sleep(5 * 60)
