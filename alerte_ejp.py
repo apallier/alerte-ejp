@@ -19,7 +19,6 @@ import time
 
 import requests
 
-
 try:
     import my_config as config
 except ImportError:
@@ -84,12 +83,13 @@ def alert_ejp(previous_status):
         if status != previous_status and status != 'ND':
             if 'EST' in status:
                 msg = 'On est en EJP demain :-('
+                msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
+                send_mail(msg)
+                send_sms_freemobile(msg)
             elif 'NON' in status:
                 msg = 'On n\'est pas en EJP demain :-)'
-            msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
+
             logging.info(msg)
-            send_mail(msg)
-            send_sms_freemobile(msg)
 
         return status
 
@@ -118,15 +118,18 @@ def prevision_ejp(previous_color):
             elif color == "ROUGE":
                 msg += 'élevée'
 
-            msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
-            logging.info(msg)
-            send_mail(msg)
-            send_sms_freemobile(msg)
+            # On envoie l'alerte qu'en cas de probabilité moyenne/haute
+            if color != "BLEU":
+                msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
+                logging.info(msg)
+                send_mail(msg)
+                send_sms_freemobile(msg)
 
         return color
 
     except BaseException as err:
         logging.error(err)
+
 
 def save_status(ejp, tempo):
     """ Sauvegarde du contexte pour éviter de renvoyer les alertes en cas
@@ -134,20 +137,23 @@ def save_status(ejp, tempo):
     """
     pickle.dump((ejp, tempo), open("ctx.bin", "wb"))
 
+
 def load_status():
     """ Charge le contexte """
     ejp, tempo = 'ND'
     try:
         (ejp, tempo) = pickle.load(open("ctx.bin", "rb"))
     except BaseException as err:
-        logging.error("Imposssible de récupérer le contexte précédent: %s", err)
+        logging.error("Imposssible de récupérer le contexte précédent: %s",
+                      err)
     return (ejp, tempo)
+
 
 if __name__ == '__main__':
 
     (ejp_previous_status, tempo_previous_color) = load_status()
-    while True:
 
+    while True:
         if not 4 <= datetime.date.today().weekday() <= 5:
             logging.info('-' * 50)
             ejp_status = alert_ejp(ejp_previous_status)
