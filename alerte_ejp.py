@@ -68,7 +68,7 @@ def send_sms_freemobile(message):
             logging.error(err)
 
 
-def alert_ejp(previous_status):
+def alert_ejp(previous_status, alert):
     """ Procédure qui s'occupe d'envoyer les alertes lorsque le lendemain est une journée EJP """
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     tomorrow_str = tomorrow.strftime('%Y-%m-%d')
@@ -81,13 +81,15 @@ def alert_ejp(previous_status):
         status = response_dict['JourJ'][config.ZONE]
 
         if status != previous_status and status != 'ND':
-            if 'EST' in status:
+            if 'NON' in status:
+                msg = 'On n\'est pas en EJP demain :-)'
+            elif 'EST' in status:
                 msg = 'On est en EJP demain :-('
+
+            if 'EST' in status or alert:
                 msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
                 send_mail(msg)
                 send_sms_freemobile(msg)
-            elif 'NON' in status:
-                msg = 'On n\'est pas en EJP demain :-)'
 
             logging.info(msg)
 
@@ -152,16 +154,18 @@ def load_status():
 if __name__ == '__main__':
 
     (ejp_previous_status, tempo_previous_color) = load_status()
+    to_alert = False
 
     while True:
         if not 4 <= datetime.date.today().weekday() <= 5:
             logging.info('-' * 50)
-            ejp_status = alert_ejp(ejp_previous_status)
+            ejp_status = alert_ejp(ejp_previous_status, to_alert)
             if ejp_status:
                 ejp_previous_status = ejp_status
             tempo_color = prevision_ejp(tempo_previous_color)
             if tempo_color:
                 tempo_previous_color = tempo_color
+            to_alert = (tempo_color == 'ROUGE')
 
             save_status(ejp_previous_status, tempo_previous_color)
 
