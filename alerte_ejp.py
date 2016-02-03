@@ -18,6 +18,9 @@ import smtplib
 import time
 
 import requests
+import tendo.singleton
+# variable "handle" important sinon le système ne fonctionne pas
+handle = tendo.singleton.SingleInstance()
 
 try:
     import my_config as config
@@ -37,8 +40,8 @@ def send_mail(message):
     if config.TO_ADDRS:
         msg = MIMEText(message.encode('latin_1'), 'plain', 'latin_1')
         msg['From'] = email.utils.formataddr(('Alerte EJP', config.FROM_ADDR))
-        msg['To'] = email.utils.formataddr(('Alerte EJP',
-                                            ', '.join(config.TO_ADDRS)))
+        msg['To'] = email.utils.formataddr(('Alerte EJP', ', '.join(
+            config.TO_ADDRS)))
         msg['Subject'] = Header("Alerte EJP", 'utf-8')
 
         server = smtplib.SMTP(host='smtp.gmail.com')
@@ -88,8 +91,8 @@ def alert_ejp(previous_status, alert):
 
             if 'EST' in status or alert:
                 msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
-                send_mail(msg)
-                send_sms_freemobile(msg)
+#                send_mail(msg)
+#                send_sms_freemobile(msg)
 
             logging.info(msg)
 
@@ -124,8 +127,8 @@ def prevision_ejp(previous_color):
             if color != "BLEU":
                 msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
                 logging.info(msg)
-                send_mail(msg)
-                send_sms_freemobile(msg)
+#                send_mail(msg)
+#                send_sms_freemobile(msg)
 
         return color
 

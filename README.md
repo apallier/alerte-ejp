@@ -7,9 +7,9 @@
 
 Fonctionne avec Python 3.
 
-Nécessite la librairie `requests`:
+Nécessite la librairie `requests` et `tendo`:
 ```
-pip install requests
+pip install requests, tendo
 ```
 
 ## Principe
