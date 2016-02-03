@@ -91,8 +91,8 @@ def alert_ejp(previous_status, alert):
 
             if 'EST' in status or alert:
                 msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
-#                send_mail(msg)
-#                send_sms_freemobile(msg)
+                send_mail(msg)
+                send_sms_freemobile(msg)
 
             logging.info(msg)
 
@@ -127,8 +127,8 @@ def prevision_ejp(previous_color):
             if color != "BLEU":
                 msg = msg + ' (le %s)' % tomorrow.strftime('%d-%m-%Y')
                 logging.info(msg)
-#                send_mail(msg)
-#                send_sms_freemobile(msg)
+                send_mail(msg)
+                send_sms_freemobile(msg)
 
         return color
 
