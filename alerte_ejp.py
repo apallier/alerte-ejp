@@ -18,6 +18,8 @@ import smtplib
 import time
 
 import requests
+logging.getLogger("requests").setLevel(logging.WARNING)
+
 import tendo.singleton
 # variable "handle" important sinon le système ne fonctionne pas
 handle = tendo.singleton.SingleInstance()
@@ -168,8 +170,8 @@ if __name__ == '__main__':
             tempo_color = prevision_ejp(tempo_previous_color)
             if tempo_color:
                 tempo_previous_color = tempo_color
-            to_alert = (tempo_color == 'ROUGE')
+            to_alert = (tempo_color != 'BLEU')
 
             save_status(ejp_previous_status, tempo_previous_color)
 
-        time.sleep(5 * 60)
+        time.sleep(15 * 60)
